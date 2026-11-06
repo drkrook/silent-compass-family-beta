@@ -4,7 +4,7 @@ const section=document.createElement('div');section.className='section';section.
 panel.prepend(section);
 const layers=['hospitals','military','water','ramps','privateVisible'],presets={hiker:[true,false,true,false,true],hunter:[false,false,true,true,true],grid:[true,false,true,true,true]};
 function message(s){$('scZoneMessage').textContent=s}
-function applyPreset(k){if(!presets[k])return;layers.forEach((id,i)=>{const e=$(id);if(e){e.checked=presets[k][i];e.dispatchEvent(new Event('change'))}});$('scPresetMsg').textContent='Preset applied. Existing cached resources were not changed.'}
+function applyPreset(k){if(!presets[k])return;layers.forEach((id,i)=>{const e=$(id);if(e){e.checked=presets[k][i]}});if(typeof render==='function')render();$('scPresetMsg').textContent='Preset applied. Existing cached resources were not changed.'}
 $('scPreset').onchange=e=>applyPreset(e.target.value);
 layers.forEach(id=>$(id)?.addEventListener('change',()=>{$('scPreset').value='custom'}));
 let zones=[];const storage='silent-compass-no-go-zones-v1';try{zones=JSON.parse(localStorage.getItem(storage))||[]}catch{}if(!Array.isArray(zones))zones=[];
