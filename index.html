@@ -187,7 +187,8 @@ async function resolvePrivateAddress(address){
  const query=String(address||'').trim();if(!query)throw Error('Enter a street address.');
  const providers=[
   {name:'US Census',url:'https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address='+encodeURIComponent(query)+'&benchmark=Public_AR_Current&vintage=Current_Current&format=json',parse:data=>{const m=data?.result?.addressMatches?.[0];return m?.coordinates?[Number(m.coordinates.y),Number(m.coordinates.x)]:null}},
-  {name:'OpenStreetMap',url:'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&countrycodes=us&q='+encodeURIComponent(query),parse:data=>Array.isArray(data)&&data[0]?[Number(data[0].lat),Number(data[0].lon)]:null}
+  {name:'OpenStreetMap',url:'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&countrycodes=us&q='+encodeURIComponent(query),parse:data=>Array.isArray(data)&&data[0]?[Number(data[0].lat),Number(data[0].lon)]:null},
+  {name:'ArcGIS',url:'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+encodeURIComponent(query)+'&f=json&outFields=Match_addr,Addr_type&maxLocations=1',parse:data=>{const match=data?.candidates?.[0];return match&&match.score>=85&&match.location?[Number(match.location.y),Number(match.location.x)]:null}}
  ];
  const errors=[];
  for(const provider of providers){
