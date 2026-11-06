@@ -60,7 +60,7 @@ a{color:#f1bd73}
  const side=document.getElementById('sidePanel');
  const top=side.querySelector('.panelTop');
  const tabs=document.createElement('nav');tabs.className='atlasTabs';tabs.setAttribute('aria-label','GridDown workspace');
- const names=[['map','🗺️ Map'],['routes','🧭 Routes'],['places','📍 Locations'],['layers','⚙️ Layers'],['offline','⬇️ Offline'],['terrain','🏔️ Terrain'],['survival','🧰 Survival']];
+ const names=[['map','🗺️ Map'],['routes','🧭 Routes'],['places','📍 Locations'],['hazards','⚠️ Hazards'],['layers','⚙️ Layers'],['offline','⬇️ Offline'],['terrain','🏔️ Terrain'],['survival','🧰 Survival']];
  const panels={};
  names.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.className='atlasTab';b.textContent=label;b.id='tab-'+id;b.setAttribute('role','tab');b.setAttribute('aria-controls','panel-'+id);b.onclick=()=>activate(id);tabs.append(b);const pane=document.createElement('div');pane.id='panel-'+id;pane.className='atlasTabPanel';pane.setAttribute('role','tabpanel');panels[id]=pane});
  top.after(tabs);Object.values(panels).forEach(p=>side.append(p));
