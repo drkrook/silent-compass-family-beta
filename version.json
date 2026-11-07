@@ -1,5 +1,5 @@
 {
-  "version": "0.5.32",
+  "version": "0.5.33",
   "released": "2026-11-07",
-  "notes": "Hazard pin placement opens the map with clear instructions; map redraws after switching from Hazards"
+  "notes": "Hazard pin placement opens a full-screen interactive map overlay with cancel and automatic return to Hazards"
 }
