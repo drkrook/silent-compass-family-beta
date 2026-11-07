@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.7.1",
   "released": "2026-11-07",
-  "notes": "Six-language selector with offline saved preference; translated navigation and selected home labels. Emergency instructions remain English pending safety review."
+  "notes": "Translate Show My Location, Get Directions and home card descriptions across six languages; preserve GPS and routing."
 }
