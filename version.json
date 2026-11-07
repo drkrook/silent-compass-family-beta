@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.5.1",
   "released": "2026-11-07",
-  "notes": "Walking and biking route planning and saved offline reference directions"
+  "notes": "Saved route dropdown shows travel modes; legacy routes identified"
 }
