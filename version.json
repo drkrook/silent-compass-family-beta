@@ -1,5 +1,5 @@
 {
-  "version": "0.7.5",
+  "version": "0.7.6",
   "released": "2026-11-07",
-  "notes": "Translate Locations form fields, dropdowns, placeholders, selected-location labels and More Tools in six languages."
+  "notes": "Six-language Directions page controls, route fields, travel modes, saved route management and offline reference warning."
 }
