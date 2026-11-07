@@ -1,0 +1,37 @@
+name: Build South Carolina resource pack
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install builder dependency
+        run: pip install osmium
+      - name: Download South Carolina OpenStreetMap extract
+        run: curl --fail --location --retry 3 --output /tmp/south-carolina.osm.pbf https://download.geofabrik.de/north-america/us/south-carolina-latest.osm.pbf
+      - name: Build pack and manifest
+        run: |
+          python tools/build-state-resource-pack.py SC /tmp/south-carolina.osm.pbf state-packs/SC.json
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('state-packs/SC.json')
+          data=json.loads(p.read_text())
+          count=len(data['features'])
+          if count<100: raise SystemExit(f'Unexpectedly low resource count: {count}; not publishing')
+          manifest={'schema':1,'states':{'SC':{'file':'SC.json','count':count,'generatedAt':data['generatedAt'],'coverageNote':data['coverageNote']}}}
+          pathlib.Path('state-packs/manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          print('South Carolina pack records:',count)
+          PY
+      - name: Commit generated pack
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state-packs/SC.json state-packs/manifest.json
+          git diff --cached --quiet || (git commit -m "Publish generated South Carolina resource pack" && git push)
