@@ -1,5 +1,5 @@
 {
-  "version": "0.7.2",
+  "version": "0.7.3",
   "released": "2026-11-07",
-  "notes": "Move six-language dropdown into accessible, high-contrast row below header with larger mobile touch target."
+  "notes": "Translate common page navigation and NWS headings in six languages; begin phased page localization while retaining English safety instructions."
 }
