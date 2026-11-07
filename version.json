@@ -1,5 +1,5 @@
 {
-  "version": "0.5.39",
+  "version": "0.5.40",
   "released": "2026-11-07",
-  "notes": "Improved resource details with phone and website actions; verified Carolina Pines hospital contact information"
+  "notes": "Call and Open buttons inline beside resource phone and website, removing duplicate contact details"
 }
