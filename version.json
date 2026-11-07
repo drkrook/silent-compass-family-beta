@@ -1,5 +1,5 @@
 {
-  "version": "0.5.29",
+  "version": "0.5.30",
   "released": "2026-11-07",
-  "notes": "Simplified Hazards screen with Home Map More Tools and expandable reporting and saved hazards"
+  "notes": "Added Hazards shortcut directly to the main home screen while preserving all existing shortcuts"
 }
