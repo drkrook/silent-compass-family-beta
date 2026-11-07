@@ -1,5 +1,5 @@
 {
-  "version": "0.5.31",
+  "version": "0.5.32",
   "released": "2026-11-07",
-  "notes": "Choose hazard map icons including fire, flood, blocked road, and fictional zombie scenarios"
+  "notes": "Hazard pin placement opens the map with clear instructions; map redraws after switching from Hazards"
 }
