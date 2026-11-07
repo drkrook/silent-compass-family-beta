@@ -1,5 +1,5 @@
 {
-  "version": "0.6.3",
+  "version": "0.6.4",
   "released": "2026-11-07",
-  "notes": "Home screen shortcut to official NWS weather alerts directly beneath SOS; opens alert check panel."
+  "notes": "Dedicated Official Weather Alerts page with active NWS check and locally saved alert history."
 }
