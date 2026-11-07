@@ -1,5 +1,5 @@
 {
-  "version": "0.5.9",
+  "version": "0.5.10",
   "released": "2026-11-07",
-  "notes": "Simplified Map navigation with Home, Directions, and expandable advanced tools"
+  "notes": "Directions screen opens routing tools first; map and advanced navigation are optional"
 }
