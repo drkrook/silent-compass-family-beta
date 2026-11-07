@@ -283,6 +283,32 @@ const scAddressChoices={routeFrom:null,routeTo:null};
 function scNormalizeAddress(value){return value.trim().replace(/\\s+/g,' ').replace(/\\bHwy\\b/gi,'Highway').replace(/\\bSt\\b/gi,'Street').replace(/\\bRd\\b/gi,'Road').replace(/\\bSC\\b/gi,'South Carolina')}
 function scClearAddressChoice(id){scAddressChoices[id]=null;const box=$(id==='routeFrom'?'scFromMatches':'scToMatches');if(box)box.replaceChildren()}
 for(const id of ['routeFrom','routeTo'])$(id).addEventListener('input',()=>scClearAddressChoice(id));
+function scCensusLookup(address){
+ return new Promise((resolve,reject)=>{
+  const callback='scCensusResult_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+  const script=document.createElement('script');let finished=false;
+  const finish=(error,data)=>{if(finished)return;finished=true;clearTimeout(timer);delete window[callback];script.remove();error?reject(error):resolve(data)};
+  window[callback]=data=>finish(null,data);
+  const timer=setTimeout(()=>finish(Error('Census address service timed out')),9000);
+  const normalized=scNormalizeAddress(address).replace(/\\bStreet\\b/gi,'St').replace(/\\bRoad\\b/gi,'Rd').replace(/\\bHighway\\b/gi,'Hwy').replace(/\\bAvenue\\b/gi,'Ave');
+  const full=/\\b(Florence|Hartsville|Darlington)\\b/i.test(normalized)?normalized:normalized+', Florence, SC 29501';
+  script.src='https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?benchmark=Public_AR_Current&format=jsonp&callback='+callback+'&address='+encodeURIComponent(full);
+  script.onerror=()=>finish(Error('Census address service unavailable'));document.head.append(script);
+ });
+}
+function scAddCensusMatches(box,id,input,data){
+ const matches=data?.result?.addressMatches||[];
+ if(!matches.length)return false;
+ const label=document.createElement('div');label.textContent='U.S. Census estimated address locations (not building entrances):';box.append(label);
+ for(const match of matches.slice(0,5)){
+  const coord=match.coordinates;if(!coord||!Number.isFinite(Number(coord.x))||!Number.isFinite(Number(coord.y)))continue;
+  const button=document.createElement('button');button.type='button';button.style.cssText='display:block;width:100%;text-align:left;margin:6px 0;white-space:normal';
+  button.textContent=match.matchedAddress+' · Estimated street position';
+  button.onclick=()=>{scAddressChoices[id]={value:input.value.trim(),coords:[Number(coord.x),Number(coord.y)],label:match.matchedAddress,estimated:true};box.replaceChildren();const note=document.createElement('div');note.textContent='Selected Census estimate: '+match.matchedAddress+'. Verify the destination and entrance on the map.';box.append(note);routeInfo('Estimated street position selected. Confirm the actual entrance before traveling.')};
+  box.append(button);
+ }
+ return true;
+}
 async function scFindAddress(id){
  const input=$(id),value=input.value.trim(),box=$(id==='routeFrom'?'scFromMatches':'scToMatches');
  box.replaceChildren();scAddressChoices[id]=null;
@@ -309,7 +335,12 @@ async function scFindAddress(id){
    if(requestedNumber&&actualNumber&&String(actualNumber)!==requestedNumber)return false;
    return true;
   }).slice(0,5);
-  if(!results.length){routeInfo('No matching Florence-area address found. The address may be missing from OpenStreetMap. Check city, spelling and ZIP, or choose a point on the map.');return}
+  if(!results.length){
+   routeInfo('Trying the U.S. Census address database…');
+   try{const census=await scCensusLookup(value);if(scAddCensusMatches(box,id,input,census)){routeInfo('Census found an estimated street location. Select and verify the matching address.');return}}
+   catch(e){routeInfo('Census fallback unavailable: '+e.message)}
+   routeInfo('No matching address found in either service. Check the address or select a point on the map.');return
+  }
   const label=document.createElement('div');label.textContent='Choose the correct address (do not assume the first result is exact):';box.append(label);
   for(const result of results){
    const button=document.createElement('button');button.type='button';button.style.cssText='display:block;width:100%;text-align:left;margin:6px 0;white-space:normal';
