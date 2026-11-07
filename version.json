@@ -1,5 +1,5 @@
 {
-  "version": "0.5.2",
+  "version": "0.5.3",
   "released": "2026-11-07",
-  "notes": "Name routes before saving and warn about duplicates"
+  "notes": "Rename and delete saved routes with confirmation"
 }
