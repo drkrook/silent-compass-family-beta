@@ -1,5 +1,5 @@
 {
-  "version": "0.5.7",
+  "version": "0.5.8",
   "released": "2026-11-07",
-  "notes": "Simplified emergency-friendly Home screen opens first; map and existing features remain accessible"
+  "notes": "Home-first dashboard hides map and advanced tabs until selected"
 }
