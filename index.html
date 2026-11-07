@@ -147,7 +147,7 @@ async function scCheckStatePack(){
   if(!response.ok)throw Error('Manifest HTTP '+response.status);
   const manifest=await response.json(),entry=manifest.states?.[state];
   if(!entry?.file){scPackStatus.textContent='No published pack for '+STATES[state][0]+' yet. Existing area downloads remain available below.';return}
-  if(!/^([a-zA-Z0-9_-]+\\/)*[a-zA-Z0-9_.-]+\\.json$/.test(entry.file)||entry.file.includes('..'))throw Error('Invalid pack path');
+  if(typeof entry.file!=='string'||!entry.file.endsWith('.json')||entry.file.includes('..')||entry.file.startsWith('/')||!entry.file.split('/').every(part=>part&&[...part].every(ch=>/[a-zA-Z0-9_.-]/.test(ch))))throw Error('Invalid pack path');
   scPackButton.disabled=false;scPackStatus.textContent=STATES[state][0]+' pack available ('+(entry.count??'unknown')+' resources). Download when ready.';
   scPackButton.onclick=async()=>{
    scPackButton.disabled=true;scPackStatus.textContent='Downloading '+STATES[state][0]+' resources…';
