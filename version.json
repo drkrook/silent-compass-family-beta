@@ -1,5 +1,5 @@
 {
-  "version": "0.5.11",
+  "version": "0.5.12",
   "released": "2026-11-07",
-  "notes": "Home Show My Location now opens map and activates GPS location"
+  "notes": "Fix mobile Map Tools overflow and choose custom icons for personal saved locations"
 }
