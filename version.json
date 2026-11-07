@@ -1,5 +1,5 @@
 {
-  "version": "0.5.12",
+  "version": "0.5.13",
   "released": "2026-11-07",
-  "notes": "Fix mobile Map Tools overflow and choose custom icons for personal saved locations"
+  "notes": "Locations opens directly to saved personal places with simplified navigation"
 }
