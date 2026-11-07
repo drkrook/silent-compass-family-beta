@@ -1,5 +1,5 @@
 {
-  "version": "0.5.4",
+  "version": "0.5.5",
   "released": "2026-11-07",
-  "notes": "Find saved route endpoints by address while offline; full offline address database remains planned"
+  "notes": "Offline address matches now open their corresponding saved route and directions"
 }
