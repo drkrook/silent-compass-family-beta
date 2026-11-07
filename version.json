@@ -1,5 +1,5 @@
 {
-  "version": "0.5.6",
+  "version": "0.5.7",
   "released": "2026-11-07",
-  "notes": "Save, reuse and remove named start or destination locations offline"
+  "notes": "Simplified emergency-friendly Home screen opens first; map and existing features remain accessible"
 }
