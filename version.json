@@ -1,5 +1,5 @@
 {
-  "version": "0.5.41",
+  "version": "0.6.0",
   "released": "2026-11-07",
-  "notes": "Hotfix JavaScript parsing error that blocked map initialization in v0.5.40"
+  "notes": "Stage 1 emergency action mode: large one-step-at-a-time offline guidance in Emergency Help. Official NWS alerts planned, not yet enabled."
 }
