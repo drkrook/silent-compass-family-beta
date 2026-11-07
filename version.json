@@ -1,5 +1,5 @@
 {
-  "version": "0.5.20",
+  "version": "0.5.21",
   "released": "2026-11-07",
-  "notes": "Offline Readiness opens directly with Home, Map, and More Tools; existing offline controls preserved"
+  "notes": "GPS coordinates panel now toggles closed on second tap and refreshes on reopening"
 }
