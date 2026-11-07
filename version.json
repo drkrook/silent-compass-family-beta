@@ -1,5 +1,5 @@
 {
-  "version": "0.6.2",
+  "version": "0.6.3",
   "released": "2026-11-07",
-  "notes": "First NWS alerts panel in Emergency Help: GPS lookup, official alerts, timestamps, and offline saved snapshot; manual checks only."
+  "notes": "Home screen shortcut to official NWS weather alerts directly beneath SOS; opens alert check panel."
 }
