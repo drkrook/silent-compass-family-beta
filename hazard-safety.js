@@ -4,6 +4,30 @@ let reports=[];try{reports=JSON.parse(localStorage.getItem(key))||[]}catch{}if(!
 const panel=document.getElementById('privatePlacesPanel')||document.querySelector('aside');if(!panel)return;
 const section=document.createElement('div');section.className='section';section.innerHTML='<strong>⚠️ Hazard Pins & Safety Reports</strong><p class="muted">Reports are your observations, not verified alerts. Stored only on this device; no automatic sharing. Tap “Place pin” then tap the map. Existing map gestures remain available otherwise.</p><label for="hazName">Marker name</label><input id="hazName" maxlength="90" placeholder="e.g. Washed-out bridge"><label for="hazType">Hazard</label><select id="hazType"><option>Blocked road / bridge</option><option>Flooding / high water</option><option>Fire / smoke</option><option>Dangerous terrain</option><option>Other hazard</option></select><label for="hazStatus">Safety status</label><select id="hazStatus"></select><label for="hazSource">Information source</label><select id="hazSource"><option>Personally observed</option><option>Reported by someone else</option><option>Unverified information</option></select><label for="hazNotes">Notes</label><input id="hazNotes" maxlength="400" placeholder="What did you observe?"><div class="row"><button id="hazPlace">📍 Place hazard pin</button><button id="hazCenter">Save at map center</button></div><label class="check"><input type="checkbox" id="hazVisible" checked> Show hazard pins on map</label><div id="hazMessage" class="legend" role="status"></div><div id="hazList"></div><div class="row"><button id="hazExport">Export reports</button><button id="hazImportBtn">Import reports</button></div><input id="hazImport" type="file" accept=".json" hidden><p class="muted">Backups are unencrypted and may reveal sensitive coordinates. A “Clear” report never guarantees safety. Routes do not automatically avoid hazards.</p>';
 (document.getElementById('panel-hazards')||panel).append(section);
+const dashboard=document.createElement('div');dashboard.id='scHazDashboard';
+const heading=document.createElement('h2');heading.textContent='⚠️ Hazards';
+const explanation=document.createElement('p');explanation.textContent='Save hazards you observe and review your reports offline. These are personal notes, not official or live emergency alerts.';
+dashboard.append(heading,explanation);
+const newHazard=document.createElement('details');newHazard.className='scHazAction';
+const newSummary=document.createElement('summary');newSummary.textContent='＋ Report a Hazard';
+const newBody=document.createElement('div');newBody.className='scHazActionBody';
+const reportList=document.createElement('details');reportList.className='scHazAction';
+const listSummary=document.createElement('summary');listSummary.textContent='📍 Saved Hazard Reports';
+const listBody=document.createElement('div');listBody.className='scHazActionBody';
+newHazard.append(newSummary,newBody);reportList.append(listSummary,listBody);
+const formFirst=document.getElementById('hazName');
+const formStart=section.querySelector('label[for="hazName"]');
+const formEnd=document.getElementById('hazVisible');
+if(formStart&&formEnd){let node=formStart;while(node&&node!==formEnd.parentElement){const next=node.nextSibling;newBody.append(node);node=next}}
+const listNode=document.getElementById('hazList');if(listNode)listBody.append(listNode);
+const visibility=document.getElementById('hazVisible');if(visibility)listBody.append(visibility.parentElement);
+const message=document.getElementById('hazMessage');if(message)dashboard.append(message);
+const exportBtn=document.getElementById('hazExport');const importBtn=document.getElementById('hazImportBtn');
+if(exportBtn&&importBtn){const backups=document.createElement('details');backups.className='scHazAction';const bs=document.createElement('summary');bs.textContent='⚙️ Backup and Import';const bb=document.createElement('div');bb.className='scHazActionBody';bb.append(exportBtn,importBtn);backups.append(bs,bb);dashboard.append(newHazard,reportList,backups)}else dashboard.append(newHazard,reportList);
+section.prepend(dashboard);
+newHazard.addEventListener('toggle',()=>{if(newHazard.open){reportList.open=false}});
+reportList.addEventListener('toggle',()=>{if(reportList.open){newHazard.open=false}});
+
 const $=id=>document.getElementById(id),msg=t=>$('hazMessage').textContent=t;
 statuses.forEach((s,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=s;$('hazStatus').append(o)});
 $('hazStatus').value='2';
