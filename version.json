@@ -1,5 +1,5 @@
 {
-  "version": "0.5.8",
+  "version": "0.5.9",
   "released": "2026-11-07",
-  "notes": "Home-first dashboard hides map and advanced tabs until selected"
+  "notes": "Simplified Map navigation with Home, Directions, and expandable advanced tools"
 }
