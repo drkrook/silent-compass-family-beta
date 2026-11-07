@@ -1,5 +1,5 @@
 {
-  "version": "0.5.17",
+  "version": "0.5.18",
   "released": "2026-11-07",
-  "notes": "Repair blank startup screen by removing premature DOM helper reference in Home activation"
+  "notes": "Emergency guidance expands immediately under selected choice with numbered offline steps"
 }
