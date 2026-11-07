@@ -1,5 +1,5 @@
 {
-  "version": "0.5.15",
+  "version": "0.5.16",
   "released": "2026-11-07",
-  "notes": "Fix emergency screen initialization that prevented Home dashboard and Help navigation from activating"
+  "notes": "Repair emergency guidance initialization so simplified Home and Help screens activate"
 }
