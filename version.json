@@ -1,5 +1,5 @@
 {
-  "version": "0.5.5",
+  "version": "0.5.6",
   "released": "2026-11-07",
-  "notes": "Offline address matches now open their corresponding saved route and directions"
+  "notes": "Save, reuse and remove named start or destination locations offline"
 }
