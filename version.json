@@ -1,5 +1,5 @@
 {
-  "version": "0.5.27",
+  "version": "0.5.28",
   "released": "2026-11-07",
-  "notes": "Fix saved location names collapsing into vertical text due to inherited dashboard button widths"
+  "notes": "Show My Location and GPS location now center at zoom 15 for street-level detail"
 }
