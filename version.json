@@ -1,5 +1,5 @@
 {
-  "version": "0.5.35",
+  "version": "0.5.36",
   "released": "2026-11-07",
-  "notes": "Saved personal location markers display map popups with icon, name, category, address and notes"
+  "notes": "Added Open Map home shortcut, separate from Show My Location GPS centering"
 }
