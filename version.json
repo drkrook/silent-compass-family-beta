@@ -1,5 +1,5 @@
 {
-  "version": "0.5.3",
+  "version": "0.5.4",
   "released": "2026-11-07",
-  "notes": "Rename and delete saved routes with confirmation"
+  "notes": "Find saved route endpoints by address while offline; full offline address database remains planned"
 }
