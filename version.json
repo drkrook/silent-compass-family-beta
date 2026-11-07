@@ -1,5 +1,5 @@
 {
-  "version": "0.7.4",
+  "version": "0.7.5",
   "released": "2026-11-07",
-  "notes": "Translate Locations dashboard, saved/bookmarked panels, backup controls, and Map Tools navigation across six languages."
+  "notes": "Translate Locations form fields, dropdowns, placeholders, selected-location labels and More Tools in six languages."
 }
