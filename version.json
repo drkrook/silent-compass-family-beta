@@ -1,5 +1,5 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "released": "2026-11-07",
-  "notes": "Stage 1 emergency action mode: large one-step-at-a-time offline guidance in Emergency Help. Official NWS alerts planned, not yet enabled."
+  "notes": "Hotfix blank screen from malformed style closing tag in v0.6.0; emergency step-by-step mode retained."
 }
