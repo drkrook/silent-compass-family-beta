@@ -1,5 +1,5 @@
 {
-  "version": "0.5.38",
+  "version": "0.5.39",
   "released": "2026-11-07",
-  "notes": "Tap resource markers to see available identifying details, address or coordinates, and bookmark/destination actions"
+  "notes": "Improved resource details with phone and website actions; verified Carolina Pines hospital contact information"
 }
