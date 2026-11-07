@@ -1,5 +1,5 @@
 {
-  "version": "0.5.13",
+  "version": "0.5.14",
   "released": "2026-11-07",
-  "notes": "Locations opens directly to saved personal places with simplified navigation"
+  "notes": "Simplified Emergency Help with 911 dialer link, GPS coordinates and offline guidance"
 }
