@@ -1,5 +1,5 @@
 {
-  "version": "0.5.22",
+  "version": "0.5.23",
   "released": "2026-11-07",
-  "notes": "Saved locations appear first; add location form and advanced fields expand on demand"
+  "notes": "Add New Location appears above saved locations for faster entry"
 }
