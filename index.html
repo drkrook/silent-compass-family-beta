@@ -291,16 +291,29 @@ async function scFindAddress(id){
  if(!navigator.onLine)return routeInfo('Address search needs internet. Saved routes still work offline.');
  const btn=$(id==='routeFrom'?'scSearchFrom':'scSearchTo');btn.disabled=true;routeInfo('Searching for matching addresses…');
  try{
-  const q=scNormalizeAddress(value);
-  const url='https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=us&q='+encodeURIComponent(q);
+  const normalized=scNormalizeAddress(value);
+  const explicitCity=/\\b(Florence|Hartsville|Darlington|South Carolina|SC)\\b/i.test(normalized);
+  const q=explicitCity?normalized:normalized+', Florence, South Carolina';
+  const isHartsville=/\\bHartsville\\b/i.test(q);
+  const boxCoords=isHartsville?'-80.25,34.55,-79.85,34.15':'-80.25,34.55,-79.45,33.85';
+  const url='https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&countrycodes=us&viewbox='+boxCoords+'&bounded=1&q='+encodeURIComponent(q);
   const res=await fetch(url,{headers:{Accept:'application/json'}});
   if(!res.ok)throw Error('Search service unavailable ('+res.status+')');
-  const results=await res.json();
-  if(!results.length){routeInfo('No matching address found. Check the street spelling, city and ZIP, or choose a point on the map.');return}
+  const rawResults=await res.json();
+  const requestedNumber=(value.match(/^\\s*(\\d+)\\b/)||[])[1];
+  const results=rawResults.filter(item=>{
+   const addr=item.address||{};
+   const state=(addr.state||'').toLowerCase();
+   if(state!=='south carolina'&&addr['ISO3166-2-lvl4']!=='US-SC')return false;
+   const actualNumber=addr.house_number;
+   if(requestedNumber&&actualNumber&&String(actualNumber)!==requestedNumber)return false;
+   return true;
+  }).slice(0,5);
+  if(!results.length){routeInfo('No matching Florence-area address found. The address may be missing from OpenStreetMap. Check city, spelling and ZIP, or choose a point on the map.');return}
   const label=document.createElement('div');label.textContent='Choose the correct address (do not assume the first result is exact):';box.append(label);
   for(const result of results){
    const button=document.createElement('button');button.type='button';button.style.cssText='display:block;width:100%;text-align:left;margin:6px 0;white-space:normal';
-   button.textContent=result.display_name;
+   button.textContent=result.display_name+((requestedNumber&&!result.address?.house_number)?' ⚠ Street or area only — house number not verified':'');
    button.onclick=()=>{scAddressChoices[id]={value:input.value.trim(),coords:[Number(result.lon),Number(result.lat)],label:result.display_name};box.replaceChildren();const note=document.createElement('div');note.textContent='Selected: '+result.display_name+' — verify the house number and location.';box.append(note);routeInfo('Address selected. You can calculate the route now.')};
    box.append(button)
   }
