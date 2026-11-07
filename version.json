@@ -1,5 +1,5 @@
 {
-  "version": "0.7.3",
+  "version": "0.7.4",
   "released": "2026-11-07",
-  "notes": "Translate common page navigation and NWS headings in six languages; begin phased page localization while retaining English safety instructions."
+  "notes": "Translate Locations dashboard, saved/bookmarked panels, backup controls, and Map Tools navigation across six languages."
 }
