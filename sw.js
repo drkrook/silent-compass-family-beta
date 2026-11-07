@@ -1,4 +1,4 @@
-const CACHE='griddown-shell-v47-beta-0-5-10';
+const CACHE='griddown-shell-v48-beta-0-5-11';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon.svg','./offline-engine.js','./package-manager.js','./survival-hub.js','./hazard-safety.js','./circle-media.js','./zones-presets.js'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('griddown-shell-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
