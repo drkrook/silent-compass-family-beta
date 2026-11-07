@@ -1,5 +1,5 @@
 {
-  "version": "0.6.5",
+  "version": "0.7.0",
   "released": "2026-11-07",
-  "notes": "Simplified dedicated NWS page: hide large map and old navigation; Home, Map, More Tools shortcuts; retain active alerts and saved history."
+  "notes": "Six-language selector with offline saved preference; translated navigation and selected home labels. Emergency instructions remain English pending safety review."
 }
