@@ -248,7 +248,27 @@ $('resources').onclick=downloadResources;$('hospitalRefresh').onclick=downloadRe
 // Routes are calculated online with public Nominatim/OSRM services; only saved geometry works offline.
 const routeInfo=msg=>$('routeInfo').textContent=msg;
 const routeCoord=s=>{let m=s.trim().match(/^(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)$/);if(!m)return null;let a=Number(m[1]),b=Number(m[2]);return Math.abs(a)<=90&&Math.abs(b)<=180?[b,a]:null};
-async function resolveRoutePoint(value){let direct=routeCoord(value);if(direct)return direct;let url='https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(value);let r=await fetch(url,{headers:{'Accept':'application/json'}});if(!r.ok)throw Error('Address lookup HTTP '+r.status);let j=await r.json();if(!j.length)throw Error('Location not found: '+value);return [Number(j[0].lon),Number(j[0].lat)]}
+async function resolveRoutePoint(value){
+ let direct=routeCoord(value);if(direct)return direct;
+ const raw=value.trim(),candidates=[raw];
+ const normalized=raw.replace(/\\s+/g,' ').replace(/,?\\s*(Florence|Darlington)\\s*,?\\s*(SC|South Carolina)?\\s*(\\d{5})?$/i,(match,city,state,zip)=>', '+city+', South Carolina'+(zip?' '+zip:''));
+ if(normalized!==raw)candidates.push(normalized);
+ const cityMatch=raw.match(/\\b(Florence|Darlington)\\b/i);
+ if(cityMatch){const city=cityMatch[1];const before=raw.slice(0,cityMatch.index).replace(/[,\\s]+$/,'');if(before)candidates.push(before+', '+city+', South Carolina, USA')}
+ const streetOnly=raw.replace(/,?\\s*(Florence|Darlington)\\s*,?\\s*(SC|South Carolina)?\\s*\\d{0,5}\\s*$/i,'').trim();
+ if(streetOnly&&streetOnly!==raw)candidates.push(streetOnly+', South Carolina, USA');
+ let lastError=null;
+ for(const q of [...new Set(candidates)].slice(0,4)){
+  try{
+   const url='https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q='+encodeURIComponent(q);
+   const res=await fetch(url,{headers:{'Accept':'application/json'}});
+   if(!res.ok){lastError=Error('Address lookup HTTP '+res.status);break}
+   const matches=await res.json();
+   if(matches.length){const found=matches[0];return [Number(found.lon),Number(found.lat)]}
+  }catch(e){lastError=e;break}
+ }
+ throw Error((lastError?'Address lookup unavailable: '+lastError.message:'Exact address not found in map search')+'. Try a nearby intersection, landmark, or GPS coordinates for '+value);
+}
 function routeSummary(r){return `${r.name} · ${r.distanceKm.toFixed(1)} km (${(r.distanceKm*.621371).toFixed(1)} mi) · approximately ${Math.round(r.durationMin)} min in normal conditions. Route calculated ${r.date}. No live closures or offline rerouting.`}
 function scRouteInstruction(step){
  const m=step.maneuver||{},type=m.type||'',mod=m.modifier||'',road=step.name?' onto '+step.name:'';
