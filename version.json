@@ -1,5 +1,5 @@
 {
-  "version": "0.7.1",
+  "version": "0.7.2",
   "released": "2026-11-07",
-  "notes": "Translate Show My Location, Get Directions and home card descriptions across six languages; preserve GPS and routing."
+  "notes": "Move six-language dropdown into accessible, high-contrast row below header with larger mobile touch target."
 }
