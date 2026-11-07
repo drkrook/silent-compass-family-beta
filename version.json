@@ -1,5 +1,5 @@
 {
-  "version": "0.5.10",
+  "version": "0.5.11",
   "released": "2026-11-07",
-  "notes": "Directions screen opens routing tools first; map and advanced navigation are optional"
+  "notes": "Home Show My Location now opens map and activates GPS location"
 }
