@@ -1,5 +1,5 @@
 {
-  "version": "0.5.16",
+  "version": "0.5.17",
   "released": "2026-11-07",
-  "notes": "Repair emergency guidance initialization so simplified Home and Help screens activate"
+  "notes": "Repair blank startup screen by removing premature DOM helper reference in Home activation"
 }
