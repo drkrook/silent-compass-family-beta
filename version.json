@@ -1,5 +1,5 @@
 {
-  "version": "0.5.1",
+  "version": "0.5.2",
   "released": "2026-11-07",
-  "notes": "Saved route dropdown shows travel modes; legacy routes identified"
+  "notes": "Name routes before saving and warn about duplicates"
 }
