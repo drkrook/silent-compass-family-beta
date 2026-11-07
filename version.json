@@ -1,5 +1,5 @@
 {
-  "version": "0.5.14",
+  "version": "0.5.15",
   "released": "2026-11-07",
-  "notes": "Simplified Emergency Help with 911 dialer link, GPS coordinates and offline guidance"
+  "notes": "Fix emergency screen initialization that prevented Home dashboard and Help navigation from activating"
 }
