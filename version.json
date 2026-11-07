@@ -1,5 +1,5 @@
 {
-  "version": "0.5.19",
+  "version": "0.5.20",
   "released": "2026-11-07",
-  "notes": "Show GPS coordinates and copy feedback inline beneath emergency GPS controls"
+  "notes": "Offline Readiness opens directly with Home, Map, and More Tools; existing offline controls preserved"
 }
