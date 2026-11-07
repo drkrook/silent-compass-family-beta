@@ -36,8 +36,16 @@ class Extract(osmium.SimpleHandler):
         # Area geometries need a separate centroid calculation; intentionally omitted.
         pass
     def way(self,w):
-        # Do not guess way centroid without validated geometry.
-        pass
+        # Approximate representative position for mapped lines and polygons.
+        # Not a verified entrance or access point.
+        pts=[n.location for n in w.nodes if n.location.valid()]
+        if not pts or len(pts)!=len(w.nodes): return
+        class Position:
+            def valid(self): return True
+        pos=Position()
+        pos.lat=sum(p.lat for p in pts)/len(pts)
+        pos.lon=sum(p.lon for p in pts)/len(pts)
+        self.add(w,pos)
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("state");p.add_argument("pbf");p.add_argument("output");a=p.parse_args()
@@ -46,10 +54,10 @@ def main():
     items=list(h.features.values());counts={}
     for f in items: counts[f["type"]]=counts.get(f["type"],0)+1
     out={"schema":1,"state":a.state.upper(),"generatedAt":datetime.datetime.now(datetime.timezone.utc).isoformat(),
-         "source":"OpenStreetMap contributors","license":"ODbL-1.0","coverageNote":"Node features only; way/relation geometries not yet included. Not a complete statewide inventory.",
+         "source":"OpenStreetMap contributors","license":"ODbL-1.0","coverageNote":"Nodes and ways included; relations not included. Way markers are approximate, not entrances. Not a complete statewide inventory.",
          "counts":counts,"features":items}
     path=pathlib.Path(a.output);path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(out,separators=(",",":"),ensure_ascii=False),encoding="utf-8")
-    print(f"Wrote {len(items)} node features to {path}. INCOMPLETE: way/relation features excluded.")
+    print(f"Wrote {len(items)} node features to {path}. INCOMPLETE: relations excluded; way positions approximate.")
 
 if __name__=="__main__": main()
