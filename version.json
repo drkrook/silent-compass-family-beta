@@ -1,5 +1,5 @@
 {
-  "version": "0.5.28",
+  "version": "0.5.29",
   "released": "2026-11-07",
-  "notes": "Show My Location and GPS location now center at zoom 15 for street-level detail"
+  "notes": "Simplified Hazards screen with Home Map More Tools and expandable reporting and saved hazards"
 }
