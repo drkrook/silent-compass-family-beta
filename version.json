@@ -1,5 +1,5 @@
 {
-  "version": "0.5.21",
+  "version": "0.5.22",
   "released": "2026-11-07",
-  "notes": "GPS coordinates panel now toggles closed on second tap and refreshes on reopening"
+  "notes": "Saved locations appear first; add location form and advanced fields expand on demand"
 }
