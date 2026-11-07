@@ -1,5 +1,5 @@
 {
-  "version": "0.6.4",
+  "version": "0.6.5",
   "released": "2026-11-07",
-  "notes": "Dedicated Official Weather Alerts page with active NWS check and locally saved alert history."
+  "notes": "Simplified dedicated NWS page: hide large map and old navigation; Home, Map, More Tools shortcuts; retain active alerts and saved history."
 }
