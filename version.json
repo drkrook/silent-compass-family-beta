@@ -1,5 +1,5 @@
 {
-  "version": "0.7.6",
+  "version": "0.8.0",
   "released": "2026-11-07",
-  "notes": "Six-language Directions page controls, route fields, travel modes, saved route management and offline reference warning."
+  "notes": "Family Circles foundation: create multiple private local circles, designate a primary circle, and manage local circles in six languages. No network sharing yet."
 }
