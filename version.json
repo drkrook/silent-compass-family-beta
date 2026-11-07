@@ -1,5 +1,5 @@
 {
-  "version": "0.5.34",
+  "version": "0.5.35",
   "released": "2026-11-07",
-  "notes": "Tap a hazard map pin to see its hazard type, report name, safety status, notes, and information source"
+  "notes": "Saved personal location markers display map popups with icon, name, category, address and notes"
 }
