@@ -1,5 +1,5 @@
 {
-  "version": "0.5.18",
+  "version": "0.5.19",
   "released": "2026-11-07",
-  "notes": "Emergency guidance expands immediately under selected choice with numbered offline steps"
+  "notes": "Show GPS coordinates and copy feedback inline beneath emergency GPS controls"
 }
