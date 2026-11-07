@@ -1,5 +1,5 @@
 {
-  "version": "0.5.36",
+  "version": "0.5.37",
   "released": "2026-11-07",
-  "notes": "Added Open Map home shortcut, separate from Show My Location GPS centering"
+  "notes": "Prominent full-width red I Need Help button placed first on the home screen"
 }
