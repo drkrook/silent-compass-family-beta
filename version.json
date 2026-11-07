@@ -1,5 +1,5 @@
 {
-  "version": "0.5.25",
+  "version": "0.5.26",
   "released": "2026-11-07",
-  "notes": "Saved Locations and Bookmarked Markers expand inside their own cards without duplicate lists"
+  "notes": "Fix saved location row layout; show only map-resource bookmarks with inline Remove controls"
 }
