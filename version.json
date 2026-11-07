@@ -1,5 +1,5 @@
 {
-  "version": "0.5.23",
+  "version": "0.5.24",
   "released": "2026-11-07",
-  "notes": "Add New Location appears above saved locations for faster entry"
+  "notes": "Emergency-style My Locations dashboard with prominent add, saved, bookmarks and backup controls"
 }
