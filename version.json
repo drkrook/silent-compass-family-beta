@@ -1,5 +1,5 @@
 {
-  "version": "0.5.30",
+  "version": "0.5.31",
   "released": "2026-11-07",
-  "notes": "Added Hazards shortcut directly to the main home screen while preserving all existing shortcuts"
+  "notes": "Choose hazard map icons including fire, flood, blocked road, and fictional zombie scenarios"
 }
