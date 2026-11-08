@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "released": "2026-11-07",
-  "notes": "Family Circles foundation: create multiple private local circles, designate a primary circle, and manage local circles in six languages. No network sharing yet."
+  "notes": "Family Account beta: email signup, sign-in, sign-out and recovery in six languages. Local circles remain on-device; no syncing or location sharing."
 }
