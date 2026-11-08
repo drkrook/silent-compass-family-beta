@@ -1,5 +1,5 @@
 {
-  "version": "0.8.1",
+  "version": "0.8.2",
   "released": "2026-11-07",
-  "notes": "Family Account beta: email signup, sign-in, sign-out and recovery in six languages. Local circles remain on-device; no syncing or location sharing."
+  "notes": "Individual Family Circles selection and confirmation preview. No cloud upload or location sharing; existing local circles preserved."
 }
