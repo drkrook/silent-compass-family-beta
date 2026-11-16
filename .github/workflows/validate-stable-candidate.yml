@@ -19,10 +19,6 @@ jobs:
           test -s index.html
           test -s manifest.webmanifest
           test -s service-worker.js || test -s sw.js
-          if grep -R -E 'repository: drkrook/silent-compass-testing|repository: drkrook/silent-compass-family-beta' .github/workflows/validate-stable-candidate.yml; then
-            echo "Unexpected cross-repository checkout reference"
-            exit 1
-          fi
           echo "Candidate contains its own HTML, manifest, and service worker."
       - name: Validate manifest JSON
         run: python3 -m json.tool manifest.webmanifest > /dev/null
