@@ -55,7 +55,17 @@ jobs:
         run: |
           set -euo pipefail
           cd recovery
-          sha256sum -c stable-source.tar.sha256
+          # Snapshot checksum was generated with an absolute runner path.
+          # Validate the digest against the extracted archive by content, not its old path.
+          python3 - <<'PY'
+          import hashlib,pathlib,re
+          checksum=pathlib.Path("stable-source.tar.sha256").read_text().strip()
+          match=re.fullmatch(r"([0-9a-fA-F]{64})\\s+\\*?.+",checksum)
+          assert match, "Invalid snapshot checksum format"
+          actual=hashlib.sha256(pathlib.Path("stable-source.tar").read_bytes()).hexdigest()
+          assert actual.lower()==match.group(1).lower(), "Recovery archive SHA-256 mismatch"
+          print("Recovery archive SHA-256 verified")
+          PY
           python3 - <<'PY'
           import os,tarfile,pathlib
           expected=os.environ["EXPECTED_SHA"].lower()
