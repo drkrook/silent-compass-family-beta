@@ -62,6 +62,16 @@ jobs:
           gh api "repos/drkrook/silent-compass-testing/actions/artifacts/$(cat ledovia-package-inventory.id)/zip" > inventory.zip
           unzip -q package.zip -d package
           unzip -q inventory.zip -d inventory
+          echo "Diagnostic: .nojekyll entry in downloaded package ZIP:"
+          unzip -Z -1 package.zip | grep -F '.nojekyll' || echo "Not found in ZIP"
+          echo "Diagnostic: .nojekyll entry after extraction:"
+          if [ -e package/.nojekyll ]; then ls -la package/.nojekyll; else echo "Not found after extraction"; fi
+          echo "Diagnostic: .nojekyll in inventory:"
+          python3 - <<'PY'
+          import json
+          inv=json.load(open("inventory/package-inventory.json"))
+          print([e for e in inv["files"] if e["path"]==".nojekyll"])
+          PY
           python3 - <<'PY'
           from pathlib import Path
           import json,hashlib
