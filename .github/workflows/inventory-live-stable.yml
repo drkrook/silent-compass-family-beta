@@ -1,0 +1,58 @@
+name: Inventory Live Stable Website (No Deploy)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  deployments: read
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Capture live Stable public files and deployment metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SITE: https://drkrook.github.io/silent-compass-family-beta
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/site
+          for file in index.html manifest.webmanifest sw.js service-worker.js icon.svg; do
+            if curl --fail --location --silent --show-error --retry 2 "$SITE/$file" -o "evidence/site/$file"; then
+              echo "Captured $file"
+            else
+              rm -f "evidence/site/$file"
+              echo "Not served: $file"
+            fi
+          done
+          test -s evidence/site/index.html
+          test -s evidence/site/manifest.webmanifest
+          (test -s evidence/site/sw.js || test -s evidence/site/service-worker.js)
+          python3 - <<'PY'
+          import hashlib,json,pathlib,datetime
+          root=pathlib.Path("evidence/site")
+          manifest=json.loads((root/"manifest.webmanifest").read_text())
+          files={}
+          for p in sorted(root.iterdir()):
+              if p.is_file():
+                  data=p.read_bytes()
+                  files[p.name]={"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
+          result={"captured_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),"site":"https://drkrook.github.io/silent-compass-family-beta/","files":files,"manifest_name":manifest.get("name"),"scope":"Selected publicly served entry-point files only; not full deployment or user data"}
+          pathlib.Path("evidence/inventory.json").write_text(json.dumps(result,indent=2)+"\n")
+          PY
+          gh api "repos/$GITHUB_REPOSITORY/pages" > evidence/pages.json || echo '{"note":"Pages metadata unavailable"}' > evidence/pages.json
+          gh api "repos/$GITHUB_REPOSITORY/deployments?per_page=100" > evidence/deployments.json || echo '[]' > evidence/deployments.json
+          {
+            echo "## LEDOVIA live Stable inventory — no deployment"
+            echo "Public URL: $SITE/"
+            echo "Files captured and hashed:"
+            cat evidence/inventory.json
+            echo "GitHub Pages and deployment metadata are included in the artifact."
+            echo "This is **not** proof of exact build provenance or a complete restorable backup."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload read-only inventory evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: ledovia-live-stable-inventory
+          path: evidence/
+          retention-days: 30
+# No repository mutation, production deployment, Supabase access, or secrets.
