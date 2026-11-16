@@ -34,6 +34,8 @@ jobs:
           assert run["head_sha"].lower()==os.environ["EXPECTED_SHA"].lower(), "Run commit differs from approved commit"
           assert run["head_branch"]=="release/independent-build-prep", "Unexpected source branch"
           assert run["status"]=="completed" and run["conclusion"]=="success", "Beta packaging run not successful"
+          print("Inspection requested Beta run ID:", os.environ["RUN_ID"])
+          print("Inspection requested Beta commit:", os.environ["EXPECTED_SHA"])
           print("Verified source run:",run)
           PY
           gh api "repos/drkrook/silent-compass-testing/actions/runs/$RUN_ID/artifacts" --jq '.artifacts | map({id,name,expired})' > artifacts.json
