@@ -1,0 +1,92 @@
+name: Validate Pinned LEDOVIA Stable Transformation (No Deploy)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout isolated release-candidate tools
+        uses: actions/checkout@v4
+        with:
+          ref: release/stable-v1.0-candidate
+          path: stable
+      - name: Download exact accepted Beta artifacts
+        env:
+          GH_TOKEN: ${{ secrets.LEDOVIA_BETA_ARTIFACT_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$GH_TOKEN"
+          gh api repos/drkrook/silent-compass-testing/actions/runs/43811995143 --jq '{head_sha,head_branch,status,conclusion}' > run.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('run.json'))
+          assert r['head_sha']=='39213ae9165f28f015b4f70e975ad9ed515b5228'
+          assert r['head_branch']=='release/independent-build-prep'
+          assert r['status']=='completed' and r['conclusion']=='success'
+          PY
+          gh api repos/drkrook/silent-compass-testing/actions/runs/43811995143/artifacts --jq '.artifacts | map({id,name,expired})' > artifacts.json
+          python3 - <<'PY'
+          import json
+          a=json.load(open('artifacts.json'))
+          for name in ('ledovia-beta-candidate','ledovia-package-inventory'):
+              matches=[x for x in a if x['name']==name and not x['expired']]
+              assert len(matches)==1, f"Missing/expired {name}"
+              open(name+'.id','w').write(str(matches[0]['id']))
+          PY
+          mkdir package inventory
+          gh api "repos/drkrook/silent-compass-testing/actions/artifacts/$(cat ledovia-beta-candidate.id)/zip" > package.zip
+          gh api "repos/drkrook/silent-compass-testing/actions/artifacts/$(cat ledovia-package-inventory.id)/zip" > inventory.zip
+          unzip -q package.zip -d package
+          unzip -q inventory.zip -d inventory
+      - name: Verify all pinned input hashes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          inv=json.loads(Path('inventory/package-inventory.json').read_text())
+          files=inv['files']
+          expected={f['path'] for f in files}
+          actual={str(p.relative_to('package')) for p in Path('package').rglob('*') if p.is_file()}
+          assert expected==actual, f"Input file mismatch: {expected^actual}"
+          assert len(files)==155 and inv['file_count']==155
+          for f in files:
+              p=Path('package')/f['path']
+              assert p.stat().st_size==f['bytes'] and hashlib.sha256(p.read_bytes()).hexdigest()==f['sha256'], f['path']
+          print('Verified all 155 pinned source files')
+          PY
+      - name: Run isolated Stable transformation and verify unchanged files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 stable/scripts/transform-pinned-beta-to-stable.py package stable-candidate > transform-result.json
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          before=Path('package')
+          after=Path('stable-candidate')
+          report=json.loads(Path('stable-candidate/stable-transformation-report.json').read_text())
+          assert report['status'].startswith('STAGING ONLY')
+          assert set(report['changed_files'])=={'index.html','manifest.webmanifest'}
+          assert 'silent-compass-testing/index.html' in (after/'index.html').read_text(), 'Recovery redirect blocker must remain explicit'
+          originals={str(p.relative_to(before)) for p in before.rglob('*') if p.is_file()}
+          outputs={str(p.relative_to(after)) for p in after.rglob('*') if p.is_file()}
+          assert outputs-originals=={'stable-transformation-report.json'}
+          assert originals-outputs==set()
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          changed={name for name in originals if sha(before/name)!=sha(after/name)}
+          assert changed=={'index.html','manifest.webmanifest'},changed
+          print('PASS: 153 source files unchanged; 2 branding files changed; recovery redirect remains BLOCKED')
+          PY
+      - name: Upload inspection report only — never publish app
+        uses: actions/upload-artifact@v4
+        with:
+          name: ledovia-stable-transformation-validation
+          path: |
+            transform-result.json
+            stable-candidate/stable-transformation-report.json
+          retention-days: 14
+# No GitHub Pages, no deploy, no Supabase changes, no candidate upload.
