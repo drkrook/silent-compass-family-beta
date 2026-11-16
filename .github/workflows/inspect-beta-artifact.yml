@@ -1,0 +1,84 @@
+name: Inspect Beta Artifact for Stable (No Deploy)
+on:
+  workflow_dispatch:
+    inputs:
+      beta_run_id:
+        description: "Successful Beta packaging workflow run ID"
+        required: true
+        type: string
+      beta_commit:
+        description: "Expected full Beta commit SHA"
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify explicit source and read-only credentials
+        env:
+          GH_TOKEN: ${{ secrets.LEDOVIA_BETA_ARTIFACT_READ_TOKEN }}
+          RUN_ID: ${{ inputs.beta_run_id }}
+          EXPECTED_SHA: ${{ inputs.beta_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$GH_TOKEN" || { echo "Missing LEDOVIA_BETA_ARTIFACT_READ_TOKEN (read-only Actions permission for Beta repository)"; exit 1; }
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]] || { echo "Run ID must be numeric"; exit 1; }
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || { echo "Expected full 40-character commit SHA"; exit 1; }
+          gh api "repos/drkrook/silent-compass-testing/actions/runs/$RUN_ID" --jq '{head_sha,head_branch,status,conclusion,event}' > run.json
+          python3 - <<'PY'
+          import json,os
+          run=json.load(open("run.json"))
+          assert run["head_sha"].lower()==os.environ["EXPECTED_SHA"].lower(), "Run commit differs from approved commit"
+          assert run["head_branch"]=="release/independent-build-prep", "Unexpected source branch"
+          assert run["status"]=="completed" and run["conclusion"]=="success", "Beta packaging run not successful"
+          print("Verified source run:",run)
+          PY
+          gh api "repos/drkrook/silent-compass-testing/actions/runs/$RUN_ID/artifacts" --jq '.artifacts | map({id,name,expired})' > artifacts.json
+          python3 - <<'PY'
+          import json
+          a=json.load(open("artifacts.json"))
+          for name in ("ledovia-beta-candidate","ledovia-package-inventory"):
+              found=[x for x in a if x["name"]==name and not x["expired"]]
+              assert len(found)==1, f"Expected one nonexpired {name}, found {len(found)}"
+          PY
+      - name: Download exact run artifacts and verify inventory hashes
+        env:
+          GH_TOKEN: ${{ secrets.LEDOVIA_BETA_ARTIFACT_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          a=json.load(open("artifacts.json"))
+          for name in ("ledovia-beta-candidate","ledovia-package-inventory"):
+              item=next(x for x in a if x["name"]==name and not x["expired"])
+              open(name+".id","w").write(str(item["id"]))
+          PY
+          mkdir -p package inventory
+          gh api "repos/drkrook/silent-compass-testing/actions/artifacts/$(cat ledovia-beta-candidate.id)/zip" > package.zip
+          gh api "repos/drkrook/silent-compass-testing/actions/artifacts/$(cat ledovia-package-inventory.id)/zip" > inventory.zip
+          unzip -q package.zip -d package
+          unzip -q inventory.zip -d inventory
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          root=Path("package")
+          inv=json.loads(Path("inventory/package-inventory.json").read_text())
+          entries=inv["files"]
+          expected={e["path"] for e in entries}
+          actual={str(p.relative_to(root)) for p in root.rglob("*") if p.is_file()}
+          assert actual==expected, f"File set mismatch: missing={expected-actual}, extra={actual-expected}"
+          for e in entries:
+              p=root/e["path"]
+              assert p.stat().st_size==e["bytes"], f"Size mismatch: {p}"
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==e["sha256"], f"Checksum mismatch: {p}"
+          assert len(entries)==inv["file_count"]
+          assert (root/"index.html").is_file()
+          assert (root/"sw.js").is_file() or (root/"service-worker.js").is_file()
+          json.loads((root/"manifest.webmanifest").read_text())
+          print(f"Verified {len(entries)} package files against inventory; NO DEPLOYMENT")
+          PY
+# Inspection only. Does not modify Stable, publish Pages, or promote artifacts.
