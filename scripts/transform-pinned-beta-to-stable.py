@@ -29,10 +29,16 @@ for before, after in replacements:
 if "Silent Compass" in html or "SILENT COMPASS" in html:
     raise SystemExit("Unreviewed legacy branding remains")
 
-# Authentication redirect is deliberately NOT modified here: production
-# Supabase redirect allowlisting and behavior must be verified first.
-if "silent-compass-testing/index.html" not in html:
-    raise SystemExit("Expected Beta recovery redirect missing; manual review required")
+# Use the current deployed app's base URL for password recovery, rather
+# than sending Stable users back to Beta. Preserve the existing API call.
+# Supabase redirect allowlisting for both app origins must be verified separately.
+old_redirect = "location.origin+'/silent-compass-testing/index.html'"
+new_redirect = "new URL('./index.html', location.href).href"
+if html.count(old_redirect) != 1:
+    raise SystemExit(f"Expected one pinned Beta recovery redirect, found {html.count(old_redirect)}")
+html = html.replace(old_redirect, new_redirect)
+if "silent-compass-testing/index.html" in html:
+    raise SystemExit("Unreviewed Beta recovery redirect remains")
 if manifest.get("name") != "LEDOVIA - Beta" or manifest.get("short_name") != "LEDOVIA - Beta":
     raise SystemExit("Unexpected pinned manifest branding")
 manifest["name"] = "LEDOVIA — Your Offline Survival Companion"
@@ -52,7 +58,7 @@ report = {
         for name in ("index.html", "manifest.webmanifest")
     },
     "blockers": [
-        "Password recovery redirect still targets Beta path",
+        "Password recovery redirect now derives from current app URL; live reset flow not tested",
         "Production Supabase redirect allowlist not verified",
         "Stable PWA and full functional retesting not completed",
         "Explicit Captain production approval required"
