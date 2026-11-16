@@ -132,8 +132,13 @@ jobs:
 # Production deployment is deliberately disabled. No production write permissions.
 # This workflow does not establish Captain approval, rollback, or live-app testing.
   production-release-disabled:
+    # Defense in depth: disabled job AND required protected environment.
+    # The environment must be configured with Captain as required reviewer
+    # before this job may ever be enabled. Never allow self-approval.
     if: ${{ false }}
     needs: verify-release-package
+    environment:
+      name: ledovia-production
     runs-on: ubuntu-24.04
     steps:
       - name: Production publishing is not enabled
