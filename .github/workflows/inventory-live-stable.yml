@@ -8,6 +8,11 @@ jobs:
   inventory:
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout repository for read-only comparison
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - name: Capture live Stable public files and deployment metadata
         env:
           GH_TOKEN: ${{ github.token }}
@@ -41,11 +46,38 @@ jobs:
           PY
           gh api "repos/$GITHUB_REPOSITORY/pages" > evidence/pages.json || echo '{"note":"Pages metadata unavailable"}' > evidence/pages.json
           gh api "repos/$GITHUB_REPOSITORY/deployments?per_page=100" > evidence/deployments.json || echo '[]' > evidence/deployments.json
+          python3 - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          inv=json.loads(pathlib.Path("evidence/inventory.json").read_text())
+          report={"live_file_comparison":{},"repository_refs":{}}
+          for ref in ["main","release/stable-v1.0-candidate"]:
+              try:
+                  sha=subprocess.check_output(["git","rev-parse",ref],text=True).strip()
+              except subprocess.CalledProcessError:
+                  sha=subprocess.check_output(["git","rev-parse","origin/"+ref],text=True).strip()
+              report["repository_refs"][ref]=sha
+              report["live_file_comparison"][ref]={}
+              for name,meta in inv["files"].items():
+                  result=subprocess.run(["git","show",sha+":"+name],capture_output=True)
+                  if result.returncode:
+                      status="not_present_in_ref"
+                  else:
+                      status="MATCH" if hashlib.sha256(result.stdout).hexdigest()==meta["sha256"] else "DIFFERENT"
+                  report["live_file_comparison"][ref][name]=status
+          pages=json.loads(pathlib.Path("evidence/pages.json").read_text())
+          report["pages"]={k:pages.get(k) for k in ("status","html_url","source","build_type") if k in pages}
+          deployments=json.loads(pathlib.Path("evidence/deployments.json").read_text())
+          report["recent_deployments"]=[{"id":x.get("id"),"sha":x.get("sha"),"ref":x.get("ref"),"environment":x.get("environment"),"created_at":x.get("created_at")} for x in (deployments if isinstance(deployments,list) else [])[:5]]
+          pathlib.Path("evidence/live-comparison.json").write_text(json.dumps(report,indent=2)+"\\n")
+          print(json.dumps(report,indent=2))
+          PY
           {
             echo "## LEDOVIA live Stable inventory — no deployment"
             echo "Public URL: $SITE/"
             echo "Files captured and hashed:"
             cat evidence/inventory.json
+            echo "Live-vs-repository comparison and Pages/deployment metadata:"
+            cat evidence/live-comparison.json
             echo "GitHub Pages and deployment metadata are included in the artifact."
             echo "This is **not** proof of exact build provenance or a complete restorable backup."
           } >> "$GITHUB_STEP_SUMMARY"
